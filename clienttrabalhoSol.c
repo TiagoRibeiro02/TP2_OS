@@ -40,10 +40,10 @@ void cliente(){
         //sprintf(bufferEsc,"/tmp/f%d",i+6);
         //limpar
         //mudar no server
-        printf("%d || %d\n",i,numDePipetas);
+       // printf("%d || %d\n",i,numDePipetas);
         pipetasDeLeitura[i][0] = open(bufferLei, 0);
         //pipetasDeEscrita[i/2][1] = open(bufferEsc,1);
-        printf("%d || %d\n",i,numDePipetas);
+        //printf("%d || %d\n",i,numDePipetas);
         memset(bufferLei,0,15);
         free(bufferLei);
         //memset(bufferEsc,0,15);
@@ -60,13 +60,15 @@ void cliente(){
 */
     int token= 0;
     int change=0;
-    int pipeta;
-    while((token=read(pipe5[0],&token ,sizeof(int)))< max ){
+    int pipeta=0;
+    while((read(pipe5[0],&token ,sizeof(int)))< max && token< max ){
         if(change != token){
-            read(pipetasDeLeitura[token % numDePipetas][0],&pipeta,sizeof(int));//será?
-            printf("[p%d] blocked on token (val = %d)\n",pipeta/2,token);
+            read(pipetasDeLeitura[token % numDePipetas ][0],&pipeta,sizeof(int));//será?
+            printf("[p%d] blocked on token (val = %d)\n",pipeta+1,token);
+            sleep(tempoDeEspera );
             change= token;
         }
+        
     }
 
     return; 

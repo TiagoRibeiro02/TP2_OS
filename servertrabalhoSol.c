@@ -33,7 +33,7 @@ void server(){
     read(pipe2[0],&max,sizeof(int));
     read(pipe3[0],&tempoDeEspera,sizeof(int));
     read(pipe4[0],&prob,sizeof(float));
-    printf("Debug1\n");
+   // printf("Debug1\n");
     /*int * pipetasDeLeitura = malloc(numeroDePipetas);
     int * pipetasDeEscrita = malloc(numeroDePipetas);
     for(int i = 1; i<= numeroDePipetas; i++)
@@ -49,25 +49,27 @@ void server(){
         char * bufferEsc = malloc(15);
         //sprintf(bufferLei,"/tmp/f%d",i+7);
         sprintf(bufferEsc,"/tmp/f%d",i+6);
-        printf("%d || %d\n",i,numeroDePipetas);
+        //printf("%d || %d\n",i,numeroDePipetas);
         //mknod(bufferLei,S_IFIFO | PERMS ,0);//limpar
         mknod(bufferEsc,S_IFIFO | PERMS ,0);
-        printf("%d || %d\n",i,numeroDePipetas);
+       // printf("%d || %d\n",i,numeroDePipetas);
         //pipetasDeLeitura[i/2][0] = open(bufferLei, 0);
         pipetasDeEscrita[i][1] = open(bufferEsc,1);
-        printf("%d || %d\n",i,numeroDePipetas);
+        //printf("%d || %d\n",i,numeroDePipetas);
         //memset(bufferLei,0,15);
         memset(bufferEsc,0,15);
         free(bufferEsc);
     }
     int token=0;
     int i=0;
-    printf("Debug1\n");
+    //printf("Debug1\n");
     while (token<= max){  
-        printf("%d\n",token);
+       // printf("%d\n",token);
         if(token == max)
         {
-            write(pipetasDeEscrita[i+1][i],&token,sizeof(int) );
+            //printf("FIM\n");
+            write(pipe5[1],&token,sizeof(int) );
+            break;
         } 
         //read(pipe1[0], &x,sizeof(int));
         //read(pipe1[0], &y,sizeof(int));
@@ -75,18 +77,23 @@ void server(){
         //write(pipe2[1], &numeroDePipetas, sizeof(int));
         //res = x + y;
 
-        //write(pipe2[1],&res, sizeof(int));
+        //write(pipe2[1],&res, sizeof(int)); 
         if(((int) (prob * 100)) >= (rand() % 100 + 1)){
+            //printf("OCORREU, %d\n", i);
             write(pipe5[1],&token,sizeof(int));
-            write(pipetasDeEscrita[i+1][1],&(i),sizeof(int));
-            sleep(tempoDeEspera );
+            write(pipetasDeEscrita[i][1],&(i),sizeof(int));
+            
         }
-        i = (i>=numeroDePipetas*2 ) ? (0) : (i+2);
+        if(i== numeroDePipetas- 1){
+            i=0;
+        }
+        else{
+            i++;
+        }
         
         token++;
         ///
     }
-    write(pipe5[1],&token,sizeof(int));
 
     return;
 }
