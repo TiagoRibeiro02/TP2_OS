@@ -71,31 +71,31 @@ int main(int argc,char *argv[])
         }
         
     }
-    close(pipe1);
-    close(pipe2);
-    close(pipe3);
-    close(pipe4);
-    close(pipe5);
+    //close(pipe1);
+    //close(pipe2);
+    //close(pipe3);
+    //close(pipe4);
+    //close(pipe5);
     for(int i =0 ; i<numDePipetas; i++){
         close(pipetasDeLeitura[i][0]);
     }
     }
     else{
-            mknod(FIFO1, S_IFIFO | PERMS, 0);
-    mknod(FIFO2, S_IFIFO | PERMS, 0);
-    mknod(FIFO3, S_IFIFO | PERMS, 0);
-    mknod(FIFO4, S_IFIFO | PERMS, 0);
-    mknod(FIFO5, S_IFIFO | PERMS, 0);
-    pipe1[0] = open(FIFO1,0); // 0 leitura
-    pipe2[0] = open(FIFO2,0); // 1 escrita
-    pipe3[0] = open(FIFO3,0);
-    pipe4[0] = open(FIFO4,0);
-    pipe5[1] = open(FIFO5,1);
+        mknod(FIFO1, S_IFIFO | PERMS, 0);
+        mknod(FIFO2, S_IFIFO | PERMS, 0);
+        mknod(FIFO3, S_IFIFO | PERMS, 0);
+        mknod(FIFO4, S_IFIFO | PERMS, 0);
+        mknod(FIFO5, S_IFIFO | PERMS, 0);
+        pipe1[0] = open(FIFO1,0); // 0 leitura
+        pipe2[0] = open(FIFO2,0); // 1 escrita
+        pipe3[0] = open(FIFO3,0);
+        pipe4[0] = open(FIFO4,0);
+        pipe5[1] = open(FIFO5,1);
 
-    read(pipe1[0], &numDePipetas,sizeof(int));
-    read(pipe2[0],&max,sizeof(int));
-    read(pipe3[0],&tempoDeEspera,sizeof(int));
-    read(pipe4[0],&prob,sizeof(float));
+        read(pipe1[0], &numDePipetas,sizeof(int));
+        read(pipe2[0],&max,sizeof(int));
+        read(pipe3[0],&tempoDeEspera,sizeof(int));
+        read(pipe4[0],&prob,sizeof(float));
    // printf("Debug1\n");
     /*int * pipetasDeLeitura = malloc(numeroDePipetas);
     int * pipetasDeEscrita = malloc(numeroDePipetas);
@@ -105,13 +105,13 @@ int main(int argc,char *argv[])
        pipetasDeEscrita[i] =(int*)malloc(2 * sizeof(int));
     }*/
     //int pipetasDeLeitura[numeroDePipetas*2 ][2];
-    int pipetasDeEscrita[numDePipetas ][2];
-    for(int i = 0;i<numDePipetas  ;i++){
+        int pipetasDeEscrita[numDePipetas ][2];
+        for(int i = 0;i<numDePipetas  ;i++){
         
         //char * bufferLei = malloc(15);
-        char * bufferEsc = malloc(15);
+            char * bufferEsc = malloc(15);
         //sprintf(bufferLei,"/tmp/f%d",i+7);
-        sprintf(bufferEsc,"/tmp/f%d",i+6);
+            sprintf(bufferEsc,"/tmp/f%d",i+6);
         //printf("%d || %d\n",i,numeroDePipetas);
         //mknod(bufferLei,S_IFIFO | PERMS ,0);//limpar
         mknod(bufferEsc,S_IFIFO | PERMS ,0);
@@ -157,11 +157,11 @@ int main(int argc,char *argv[])
         token++;
         ///
     }
-    close(pipe1);
-    close(pipe2);
-    close(pipe3);
-    close(pipe4);
-    close(pipe5);
+    //close(pipe1);
+    //close(pipe2);
+    //close(pipe3);
+    //close(pipe4);
+    //close(pipe5);
     for(int i = 0; i<numDePipetas ; i++){
         close(pipetasDeEscrita[i][1]);
     }
