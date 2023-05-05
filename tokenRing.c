@@ -21,7 +21,7 @@ int main(int argc,char *argv[])
     if(pid==0){
         pipe1[0] = open(FIFO1,0);
         int pipetasDeLeitura[numDePipetas][2];
-        for(int i = 0;i<numDePipetas   ;i++ ){
+        for(int i = 0;i<numDePipetas;i++ ){
             char * bufferLei = malloc(15);
             sprintf(bufferLei,"/tmp/f%d",i+2);
             //limpar
