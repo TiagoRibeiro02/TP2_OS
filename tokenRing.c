@@ -25,7 +25,6 @@ int main(int argc,char *argv[])
             char * bufferLei = malloc(15);
             sprintf(bufferLei,"/tmp/f%d",i+2);
             //limpar
-            //mudar no server
             pipetasDeLeitura[i][0] = open(bufferLei, 0);
             memset(bufferLei,0,15);
             free(bufferLei);
