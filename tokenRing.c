@@ -58,7 +58,6 @@ int main(int argc,char *argv[])
             mknod(bufferEsc,S_IFIFO | PERMS ,0);
             pipetasDeEscrita[i][1] = open(bufferEsc,1);
             memset(bufferEsc,0,15);
-            unlink(bufferEsc);
             free(bufferEsc);
         }
     
@@ -90,7 +89,12 @@ int main(int argc,char *argv[])
         close(pipe1[1]);
    
         for(int i = 0; i<numDePipetas ; i++){
+            char * buffer = malloc(15);
+            sprintf(buffer,"/tmp/f%d",i+2);
             close(pipetasDeEscrita[i][1]);
+            unlink(buffer);
+            memset(buffer,0,15);
+            free(buffer);
         }
         wait(NULL);
     }
