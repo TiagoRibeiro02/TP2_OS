@@ -48,14 +48,16 @@ int main(int argc,char *argv[])
         }
     }
     else{
-        mknod(FIFO1, S_IFIFO | PERMS, 0);
+        char* nome_mknod = "mk1";
+        char* nome_mknod2 = "mk2";
+        mknod(nome_mknod, FIFO1, S_IFIFO | PERMS, 0);
         pipe1[1] = open(FIFO1,1);
         int pipetasDeEscrita[numDePipetas ][2];
         for(int i = 0;i<numDePipetas  ;i++){
             char * bufferEsc = malloc(15);
             sprintf(bufferEsc,"/tmp/f%d",i+2);
             //limpar
-            mknod(bufferEsc,S_IFIFO | PERMS ,0);
+            mknod(nome_mknod2, bufferEsc,S_IFIFO | PERMS ,0);
             pipetasDeEscrita[i][1] = open(bufferEsc,1);
             memset(bufferEsc,0,15);
             free(bufferEsc);
@@ -85,6 +87,18 @@ int main(int argc,char *argv[])
             token++;
         }
         close(pipe1[1]);
+        int res = unlink(nome_mknod);
+        int res2 = unlink(nome_mknod2);
+        if (res == -1) {
+            perror("Falha ao desvincular mknod 1");
+            return 1;
+        }
+        if (res2 == -1) {
+            perror("Falha ao desvincular mknod 2");
+            return 1;
+        }
+        printf("Mknods desvinculado com sucesso!\n");
+        
         for(int i = 0; i<numDePipetas ; i++){
             close(pipetasDeEscrita[i][1]);
         }
