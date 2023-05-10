@@ -58,7 +58,7 @@ int main(int argc,char *argv[])
             mknod(bufferEsc,S_IFIFO | PERMS ,0);
             pipetasDeEscrita[i][1] = open(bufferEsc,1);
             memset(bufferEsc,0,15);
-            //unlink(bufferEsc);
+            unlink(bufferEsc);
             free(bufferEsc);
         }
     
@@ -86,7 +86,7 @@ int main(int argc,char *argv[])
         
             token++;
         }
-        //unlink(FIFO1);
+        unlink(FIFO1);
         close(pipe1[1]);
    
         for(int i = 0; i<numDePipetas ; i++){
