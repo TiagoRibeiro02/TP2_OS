@@ -74,29 +74,11 @@ int main (int argc,char * argv[] )
         
 
         while(1){
-            printf("DO\n");
-            if(fcntl(pipetas[i][0],F_GETFD) == -1 && fcntl(pipetas[i][1], F_GETFD) == -1)
-             {
-                for(int k=0;k<numDePipetas;k++ ){
-                     kill(ids[k],SIGINT);
-                } 
-                raise(SIGINT); 
-                return 0;
-             }
+            
+            
             read(pipetas[i][0], &token, sizeof(int));
 
-            do{
-                printf("DO%d\n",token);////erro
-                if(fcntl(pipetas[i][0],F_GETFD) == -1 && fcntl(pipetas[i][1], F_GETFD) == -1)
-             {
-                for(int k=0;k<numDePipetas;k++ ){
-                     kill(ids[k],SIGINT);
-                } 
-                    raise(SIGINT); 
-                return 0;
-
-             }
-            }while(((token +numDePipetas -i) % numDePipetas != 0 && token != max)   );
+            
             
             if((int) (prob * 100) >= (rand() % 100 + 1)){
                 printf("[p%d] blocked on token (val = %d) PROCESSO = %d\n",i+1,token, getpid());
@@ -104,7 +86,7 @@ int main (int argc,char * argv[] )
             }
             
              if(token >= max){
-                if(DEBUGGING) printf("\n FechoPID:%d \n",getpid());
+               // if(1) printf("\n FechoPID:%d \n",getpid());
                 for(int k=0;k<numDePipetas;k++){
                     
                     close(pipetas[k][1]);
@@ -116,16 +98,23 @@ int main (int argc,char * argv[] )
                 
                 kill(parent,SIGINT);
                 for(int k=0;k<numDePipetas;k++ ){
+
+                    //printf("Numero de pipes=%d\n",numDePipetas);
+                    //printf("id %d : %d\n",k+1,ids[k]);
+                    if(k!=i)
                      kill(ids[k],SIGINT);
                 } 
                     raise(SIGINT); 
                
+                exit(0);
                 return 0;
                               
              }
              
             
             token = token +1;
+           // printf("Token%d\n",token);
+           
              write(pipetas[i][1], &token, sizeof(int)); 
 
 
@@ -141,7 +130,7 @@ int main (int argc,char * argv[] )
     token = 0;
     write(fd_write, &token, sizeof(int));
     close(fd_write);
-    
+    exit(0);
     return !TRUE;
 }
 
