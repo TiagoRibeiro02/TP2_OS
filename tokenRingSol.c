@@ -47,7 +47,8 @@ int main (int argc,char * argv[] )
     for(int i = 0; i< numDePipetas; i++){
         char * buffer = (char *) malloc(15);
         if(i!=numDePipetas-1){
-        sprintf(buffer,"pipe%dto%d",i+1,i+2);}
+            sprintf(buffer,"pipe%dto%d",i+1,i+2);
+        }
         else  sprintf(buffer,"pipe%dto%d",numDePipetas,1);
         mkfifo(buffer,PERMS);
         strncpy(nomes[i],buffer,15);
@@ -58,68 +59,54 @@ int main (int argc,char * argv[] )
     for(int i = 0; i< numDePipetas  ;i ++){
         pid = fork();
         if(pid == 0){ // processo filho
-        if(DEBUGGING){ printf("CRIAR FILHO\n");}
-        ids[i] = getpid();
-        if(DEBUGGING){ printf("STACK?\n");}
-        //abrir pipes
-        if(i != numDePipetas -1){
-            pipetas[i][0] = open(nomes[i], O_RDONLY);
-            pipetas[i][1] = open(nomes[i+1],O_WRONLY);
-        }
-        else{
-            pipetas[i][0] = open(nomes[i], O_RDONLY);
-            pipetas[i][1] = open(nomes[0],O_WRONLY);
-        }
-        if(DEBUGGING){ printf("STACK?\n");}
-        
-
-        while(1){
-            
-            
-            read(pipetas[i][0], &token, sizeof(int));
-
-            
-            
-            if((int) (prob * 100) >= (rand() % 100 + 1)){
-                printf("[p%d] blocked on token (val = %d) PROCESSO = %d\n",i+1,token, getpid());
-                sleep(tempoDeEspera);
+            if(DEBUGGING){ printf("CRIAR FILHO\n");}
+            ids[i] = getpid();
+            if(DEBUGGING){ printf("STACK?\n");}
+            //abrir pipes
+            if(i != numDePipetas -1){
+                pipetas[i][0] = open(nomes[i], O_RDONLY);
+                pipetas[i][1] = open(nomes[i+1],O_WRONLY);
             }
+            else{
+                pipetas[i][0] = open(nomes[i], O_RDONLY);
+                pipetas[i][1] = open(nomes[0],O_WRONLY);
+            }
+            if(DEBUGGING){ printf("STACK?\n");}
+        
+            while(1){
             
-             if(token >= max){
-               // if(1) printf("\n FechoPID:%d \n",getpid());
-                for(int k=0;k<numDePipetas;k++){
-                    
-                    close(pipetas[k][1]);
-                    close(pipetas[k][0]);
-                    unlink(nomes[k]);
-                    
-                    
+                read(pipetas[i][0], &token, sizeof(int));
+                srand(time(NULL));
+                if((int) (prob * 100) >= (rand() % 100 + 1)){
+                    printf("[p%d] blocked on token (val = %d) PROCESSO = %d\n",i+1,token, getpid());
+                    sleep(tempoDeEspera);
                 }
-                
-                kill(parent,SIGINT);
-                for(int k=0;k<numDePipetas;k++ ){
-
-                    //printf("Numero de pipes=%d\n",numDePipetas);
-                    //printf("id %d : %d\n",k+1,ids[k]);
-                    if(k!=i)
-                     kill(ids[k],SIGINT);
-                } 
-                    raise(SIGINT); 
-               
-                exit(0);
-                return 0;
-                              
-             }
-             
             
-            token = token +1;
-           // printf("Token%d\n",token);
-           
-             write(pipetas[i][1], &token, sizeof(int)); 
+                if(token >= max){
+                    //printf("\nentrei aqui\n");
+                    //if(1) printf("\n FechoPID:%d \n",getpid());
+                    for(int k=0;k<numDePipetas;k++){
+                        close(pipetas[k][1]);
+                        close(pipetas[k][0]);
+                        unlink(nomes[k]);   
+                    }
+                    //printf("\nsai\n");
+                    kill(parent,SIGINT);
+                    for(int k=0;k<numDePipetas;k++ ){
+                        //printf("Numero de pipes=%d\n",numDePipetas);
+                        //printf("id %d : %d\n",k+1,ids[k]);
+                        if(k!=i) kill(ids[k],SIGINT);
+                    } 
+                    raise(SIGINT); 
 
-
-
-           }
+                    //exit(0);
+                    return 0;                 
+                }
+             
+                token = token +1;
+                // printf("Token%d\n",token);
+                write(pipetas[i][1], &token, sizeof(int)); 
+            }
 
         }
       
@@ -130,7 +117,7 @@ int main (int argc,char * argv[] )
     token = 0;
     write(fd_write, &token, sizeof(int));
     close(fd_write);
+    wait(NULL);
     exit(0);
     return !TRUE;
 }
-
