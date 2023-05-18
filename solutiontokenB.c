@@ -11,30 +11,28 @@
 #include <signal.h>
 #define PERMS 0666
 #define DEBUGGING 0
-
- int token = -1;
-
 #define TRUE 1
+
+int token = -1;
 int parent, numpip;
 int *ids;
 int ** pipetas;
 char **nomes;
 volatile char lock =0;
+
 sem_t sem;
 
 void stopHandler(int signum){
     int pid = getpid();
-    for(int k=0;k<numpip;k++){
-                    
+    for(int k=0;k<numpip;k++){           
         close(pipetas[k][1]);
         close(pipetas[k][0]);
         unlink(nomes[k]);                  
     }
     for(int k=0;k<numpip;k++ ){
-        if(pid != ids[k]){
-                 
+        if(pid != ids[k]){      
            kill(ids[k],SIGINT);
-       }
+        }
     } 
     
     raise(SIGINT);
@@ -44,14 +42,14 @@ void stopHandler(int signum){
 
 void trancar(){
     label:{
-    char local = 1;
-    char tmp = lock;
-    lock = local;
-    local =tmp;
+        char local = 1;
+        char tmp = lock;
+        lock = local;
+        local =tmp;
     
-    if(0 != local){
-        goto label;
-    }
+        if(0 != local){
+            goto label;
+        }
     }
 }
 
@@ -82,6 +80,7 @@ int main (int argc,char * argv[] )
     int len = sizeof(int *) * numDePipetas + sizeof(int) * 2 * numDePipetas;
     pipetas = (int **) malloc(len);
     int * ptr = ( int *) (pipetas+numDePipetas);
+
     for(int i = 0; i< numDePipetas; i++)
     {
         pipetas[i] = (ptr + 2 * i);
@@ -98,39 +97,36 @@ int main (int argc,char * argv[] )
         free(buffer);
         if(DEBUGGING){ printf("CRIAR PIPE\n");}
     }
+    
     for(int i = 0; i< numDePipetas  ;i ++){
         pid = fork();
         signal(SIGINT, stopHandler);
+        
         if(pid == 0){ // processo filho
-        if(DEBUGGING){ printf("CRIAR FILHO\n");}
-        ids[i] = getpid();
-        unsigned int seed = ids[i];
-        srand(seed);
-        if(DEBUGGING){ printf("STACK?\n");}
-        //abrir pipes
+            if(DEBUGGING){ printf("CRIAR FILHO\n");}
+            ids[i] = getpid();
+            unsigned int seed = ids[i];
+            srand(seed);
+            if(DEBUGGING){ printf("STACK?\n");}
+            //abrir pipes
         
-        pipetas[i][0] = open(nomes[i], O_RDONLY);
-        pipetas[i][1] = open(nomes[(i + 1) % numDePipetas],O_WRONLY);
+            pipetas[i][0] = open(nomes[i], O_RDONLY);
+            pipetas[i][1] = open(nomes[(i + 1) % numDePipetas],O_WRONLY);
         
-   
         
-        if(DEBUGGING){ printf("STACK?\n");}
+            if(DEBUGGING){ printf("STACK?\n");}
         
-
-        while(1){
+            while(1){
             
-            read(pipetas[i][0], &token, sizeof(int));
-            if(  (rand() % 100 + 1 ) < probInt){
-                printf("[p%d] blocked on token (val = %d) PROCESSO = %d\n",i+1,token, getpid());
-                sleep(tempoDeEspera);
+                read(pipetas[i][0], &token, sizeof(int));
+                if((rand() % 100 + 1 ) < probInt){
+                    printf("[p%d] blocked on token (val = %d) PROCESSO = %d\n",i+1,token, getpid());
+                    sleep(tempoDeEspera);
+                }
+
+                int novoToken = token + 1;
+                write(pipetas[i][1], &novoToken, sizeof(int)); 
             }
-
-            int novoToken = token + 1;
-           
-             write(pipetas[i][1], &novoToken, sizeof(int)); 
-
-
-           }
 
         }
       
