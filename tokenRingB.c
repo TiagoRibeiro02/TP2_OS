@@ -24,16 +24,19 @@ sem_t sem;
 
 void stopHandler(int signum){
     int pid = getpid();
+    printf("%d\n", pid);
+ for(int k=0;k<numpip;k++ ){
+     printf("%d  ",ids[k]);
+    } 
+    printf("\n");
+
+
     for(int k=0;k<numpip;k++){           
         close(pipetas[k][1]);
         close(pipetas[k][0]);
         unlink(nomes[k]);                  
     }
-    for(int k=0;k<numpip;k++ ){
-        if(pid != ids[k]){      
-           kill(ids[k],SIGINT);
-        }
-    } 
+    
     
     raise(SIGINT);
     exit(0);
@@ -62,6 +65,7 @@ int main (int argc,char * argv[] )
     sem_init(&sem,0,1);
     
     parent = getpid();
+    printf("parent = %d\n", parent);
     int numDePipetas= atoi(argv[1]), tempoDeEspera= atoi(argv[3]);
     numpip = numDePipetas;
     float prob= atof(argv[2]);
@@ -97,10 +101,11 @@ int main (int argc,char * argv[] )
         free(buffer);
         if(DEBUGGING){ printf("CRIAR PIPE\n");}
     }
-    
+    signal(SIGINT, stopHandler);
     for(int i = 0; i< numDePipetas  ;i ++){
+        
         pid = fork();
-        signal(SIGINT, stopHandler);
+        
         
         if(pid == 0){ // processo filho
             if(DEBUGGING){ printf("CRIAR FILHO\n");}
